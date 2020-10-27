@@ -1022,6 +1022,7 @@ async function run() {
     const sshPrivateKey = core.getInput('SSH_PRIVATE_KEY', { required: true });
     const gigalixirApp = core.getInput('GIGALIXIR_APP', { required: true });
     const migrations = core.getInput('MIGRATIONS', { required: true });
+    const migrationAppName = core.getInput('MIGRATION_APP_NAME', { required: true });
 
     await core.group("Installing gigalixir", async () => {
       await exec.exec('sudo pip install gigalixir --ignore-installed six')
@@ -1055,7 +1056,13 @@ async function run() {
 
       try {
         await core.group("Running migrations", async () => {
-          await exec.exec(`gigalixir ps:migrate -a ${gigalixirApp}`)
+          const args = [ "ps:migrate", `--app_name=${gigalixirApp}` ]
+
+          if (migrationAppName.length > 0) {
+            args.push(`--migration_app_name="${migrationAppName}"`)
+          }
+
+          await exec.exec("gigalixir", args)
         });
       } catch (error) {
         core.warning(`Migration failed, rolling back to the previous release: ${currentRelease}`);

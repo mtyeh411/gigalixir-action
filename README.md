@@ -29,6 +29,7 @@ deploy:
         GIGALIXIR_APP: my-gigalixir-app # Feel free to also put this in your secrets
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         MIGRATIONS: false  # defaults to true
+        MIGRATION_APP_NAME: "" # optional, defaults to an empty string
 ```
 
 ## Migrations
@@ -36,6 +37,7 @@ deploy:
 Currently running migrations is only supported when your app is deployed as a mix release.
 
 The migrations are run with the `gigalixir ps:migrate` command, which requires having a public key uploaded to your app's container and a private key locally to connect via an `ssh` connection.
+If you're deploying an umbrella app, you likely want to set the `MIGRATION_APP_NAME` option to the name of app containing your migrations.
 
 Please see the docs for [How to Run Migrations](https://gigalixir.readthedocs.io/en/latest/main.html#migrations) for more information.
 
