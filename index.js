@@ -88,6 +88,7 @@ async function run() {
     const gigalixirPassword = core.getInput('GIGALIXIR_PASSWORD', {required: true});
     const migrations = core.getInput('MIGRATIONS', {required: true});
     const sshPrivateKey = core.getInput('SSH_PRIVATE_KEY', {required: JSON.parse(migrations)});
+    const migrationAppName = core.getInput('MIGRATION_APP_NAME', { required: true });
 
     await core.group("Installing gigalixir", async () => {
       await exec.exec('pip3 install gigalixir')
@@ -126,7 +127,13 @@ async function run() {
 
       try {
         await core.group("Running migrations", async () => {
-          await exec.exec(`gigalixir ps:migrate -a ${gigalixirApp}`)
+          const args = [ "ps:migrate", `--app_name=${gigalixirApp}` ]
+
+          if (migrationAppName.length > 0) {
+            args.push(`--migration_app_name="${migrationAppName}"`)
+          }
+
+          await exec.exec("gigalixir", args)
         });
       } catch (error) {
         if (currentRelease === 0) {
